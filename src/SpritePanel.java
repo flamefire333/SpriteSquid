@@ -40,18 +40,6 @@ public class SpritePanel extends JPanel {
 				g.fillRect(i * gridsize, j * gridsize, gridsize, gridsize);
 			}
 		}
-		/*g.setColor(Color.lightGray);
-		int width = main.sprite[0].length * gridsize;
-		int height = main.sprite.length * gridsize;
-		int horis = height / gridsize + 1;
-		int verts = width / gridsize + 1;
-		for(int i = 0; i < horis; i++) {
-			g.fillRect(gridsize * i, 0, 1, height);
-		}
-		for(int i = 0; i < verts; i++) {
-			g.fillRect(0, gridsize * i, width, 1);
-		}*/
-		System.out.println(":D");
 	}
 	
 	boolean isMouseDown = false;
