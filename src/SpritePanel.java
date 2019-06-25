@@ -33,10 +33,10 @@ public class SpritePanel extends JPanel {
 	
 	private static final long serialVersionUID = -1570681401638494514L;
 	public void paintComponent(Graphics g) {
-		gridsize = Math.min(this.getWidth() / main.sprite[0].length, this.getHeight() / main.sprite.length);
-		for(int i = 0; i < main.sprite[0].length; i++) {
-			for(int j = 0; j < main.sprite.length; j++) {
-				g.setColor(main.palette.get(main.sprite[j][i]));
+		gridsize = Math.min(this.getWidth() / Starter.sprite.getWidth(), this.getHeight() / Starter.sprite.getHeight());
+		for(int i = 0; i < Starter.sprite.getWidth(); i++) {
+			for(int j = 0; j < Starter.sprite.getHeight(); j++) {
+				g.setColor(Starter.palette.get(Starter.sprite.getPixel(i, j)));
 				g.fillRect(i * gridsize, j * gridsize, gridsize, gridsize);
 			}
 		}
@@ -85,26 +85,26 @@ public class SpritePanel extends JPanel {
 			if(isFillMode) {
 				isFillMode = false;
 				System.out.println("FILL");
-				boolean[][] hasVisited = new boolean[main.sprite.length][main.sprite[0].length];
+				boolean[][] hasVisited = new boolean[Starter.sprite.getHeight()][Starter.sprite.getWidth()];
 				Queue<Point> visited = new LinkedList<Point>();
 				int sx = e.getX() / gridsize;
 				int sy = e.getY() / gridsize;
-				int target = main.sprite[sy][sx];
+				int target = Starter.sprite.getPixel(sx, sy);
 				visited.add(new Point(sx, sy));
 				hasVisited[sy][sx] = true;
 				while(!visited.isEmpty()) {
 					Point curr = visited.remove();
-					main.sprite[curr.y][curr.x] = main.selectedColor;
+					Starter.sprite.setPixel(curr.x, curr.y, Starter.selectedColor);
 					for(int i = 0; i < SpritePanel.neighborDeltas.length; i++) {
 						Point poss = new Point(curr.x + SpritePanel.neighborDeltas[i][0], curr.y + SpritePanel.neighborDeltas[i][1]);
-						if(poss.x >= 0 && poss.x < main.sprite[0].length && poss.y >= 0 && poss.y < main.sprite.length && main.sprite[poss.y][poss.x] == target && !hasVisited[poss.y][poss.x]) {
+						if(poss.x >= 0 && poss.x < Starter.sprite.getWidth() && poss.y >= 0 && poss.y < Starter.sprite.getHeight() && Starter.sprite.getPixel(poss.x, poss.y) == target && !hasVisited[poss.y][poss.x]) {
 							visited.add(poss);
 							hasVisited[poss.y][poss.x] = true;
 						}
 					}
 				}
 			} else {
-				main.sprite[e.getY() / gridsize][e.getX() / gridsize] = main.selectedColor;
+				Starter.sprite.setPixel(e.getX() / gridsize, e.getY() / gridsize, Starter.selectedColor);
 			}
 			
 			((SpritePanel)e.getSource()).repaint();
