@@ -12,6 +12,8 @@ public class Starter {
 	
 	public static int selectedColor = 1;
 	
+	public static SpritePanel spritePanel;
+	
 	public static void main(String[] args) {
 		sprite = new Sprite(256, 256);
 		palette = new ArrayList<Color>();
@@ -19,10 +21,10 @@ public class Starter {
 		palette.add(Color.black);
 		palette.add(Color.blue);
 		JFrame mainWindow = new JFrame();
-		SpritePanel mainPanel = new SpritePanel();
-		mainPanel.setSize(500, 500);
-		mainPanel.setBackground(Color.BLUE);
-		mainWindow.add(mainPanel);
+		spritePanel = new SpritePanel();
+		spritePanel.setSize(500, 500);
+		spritePanel.setBackground(Color.BLUE);
+		mainWindow.add(spritePanel);
 		mainWindow.setSize(500, 500);
 		mainWindow.setVisible(true);
 	}

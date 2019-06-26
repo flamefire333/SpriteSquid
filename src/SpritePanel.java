@@ -42,6 +42,47 @@ public class SpritePanel extends JPanel {
 		}
 	}
 	
+	int lastx = 0;
+	int lasty = 0;
+	
+	public void draw(int x, int y, boolean isStarting) {
+		
+		if(isFillMode) {
+			isFillMode = false;
+			System.out.println("FILL");
+			boolean[][] hasVisited = new boolean[Starter.sprite.getHeight()][Starter.sprite.getWidth()];
+			Queue<Point> visited = new LinkedList<Point>();
+			int sx = x / gridsize;
+			int sy = y / gridsize;
+			int target = Starter.sprite.getPixel(sx, sy);
+			visited.add(new Point(sx, sy));
+			hasVisited[sy][sx] = true;
+			while(!visited.isEmpty()) {
+				Point curr = visited.remove();
+				Starter.sprite.setPixel(curr.x, curr.y, Starter.selectedColor);
+				for(int i = 0; i < SpritePanel.neighborDeltas.length; i++) {
+					Point poss = new Point(curr.x + SpritePanel.neighborDeltas[i][0], curr.y + SpritePanel.neighborDeltas[i][1]);
+					if(poss.x >= 0 && poss.x < Starter.sprite.getWidth() && poss.y >= 0 && poss.y < Starter.sprite.getHeight() && Starter.sprite.getPixel(poss.x, poss.y) == target && !hasVisited[poss.y][poss.x]) {
+						visited.add(poss);
+						hasVisited[poss.y][poss.x] = true;
+					}
+				}
+			}
+		} else {
+			int sx = x / gridsize;
+			int sy = y / gridsize;
+			if(isStarting) {
+				lastx = sx;
+				lasty = sy;
+			}
+			Starter.sprite.drawLine(new Point(lastx, lasty), new Point(sx, sy), Starter.selectedColor);
+			lastx = sx;
+			lasty = sy;
+		}
+		
+		Starter.spritePanel.repaint();
+	}
+	
 	boolean isMouseDown = false;
 	
 	class SpritePanelMouseListener implements MouseListener {
@@ -67,7 +108,7 @@ public class SpritePanel extends JPanel {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			// TODO Auto-generated method stub
-			isMouseDown = true;
+			draw(e.getX(), e.getY(), true);
 		}
 
 		@Override
@@ -82,32 +123,7 @@ public class SpritePanel extends JPanel {
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			// TODO Auto-generated method stub
-			if(isFillMode) {
-				isFillMode = false;
-				System.out.println("FILL");
-				boolean[][] hasVisited = new boolean[Starter.sprite.getHeight()][Starter.sprite.getWidth()];
-				Queue<Point> visited = new LinkedList<Point>();
-				int sx = e.getX() / gridsize;
-				int sy = e.getY() / gridsize;
-				int target = Starter.sprite.getPixel(sx, sy);
-				visited.add(new Point(sx, sy));
-				hasVisited[sy][sx] = true;
-				while(!visited.isEmpty()) {
-					Point curr = visited.remove();
-					Starter.sprite.setPixel(curr.x, curr.y, Starter.selectedColor);
-					for(int i = 0; i < SpritePanel.neighborDeltas.length; i++) {
-						Point poss = new Point(curr.x + SpritePanel.neighborDeltas[i][0], curr.y + SpritePanel.neighborDeltas[i][1]);
-						if(poss.x >= 0 && poss.x < Starter.sprite.getWidth() && poss.y >= 0 && poss.y < Starter.sprite.getHeight() && Starter.sprite.getPixel(poss.x, poss.y) == target && !hasVisited[poss.y][poss.x]) {
-							visited.add(poss);
-							hasVisited[poss.y][poss.x] = true;
-						}
-					}
-				}
-			} else {
-				Starter.sprite.setPixel(e.getX() / gridsize, e.getY() / gridsize, Starter.selectedColor);
-			}
-			
-			((SpritePanel)e.getSource()).repaint();
+			draw(e.getX(), e.getY(), false);
 		}
 
 		@Override
