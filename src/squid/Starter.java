@@ -45,6 +45,8 @@ public class Starter {
 		palette = new ArrayList<Color>();
 		palette.add(Color.white);
 		palette.add(Color.black);
+		palette.add(Color.red);
+		palette.add(Color.green);
 		palette.add(Color.blue);
 		JFrame mainWindow = new JFrame();
 		spritePanel = new SpritePanel();

@@ -152,6 +152,10 @@ public class SpritePanel extends JPanel {
 				Starter.undo();
 				Starter.spritePanel.repaint();
 			}
+			if(e.getKeyChar() == 'c') {
+				System.out.println("COLOR");
+				Starter.selectedColor = (Starter.selectedColor + 1) % Starter.palette.size();
+			}
 		}
 
 		@Override
