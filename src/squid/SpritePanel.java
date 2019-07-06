@@ -1,4 +1,5 @@
 package squid;
+import squid.widgets.*;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -6,6 +7,10 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.JPanel;
 
@@ -21,13 +26,16 @@ public class SpritePanel extends JPanel {
 	 * 
 	 */
 	
+	public Squidget currentWidget;
+	
 	public static int[][] neighborDeltas = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 	
 	public SpritePanel() {
 		super();
+		currentWidget = new Brush(this);
 		this.addMouseListener(new SpritePanelMouseListener());
 		this.addMouseMotionListener(new SpritePanelMouseMotionListener());
-		this.addKeyListener(new SpritePanelKeyListener());
+		this.addKeyListener(new SpritePanelKeyListener(this));
 		setFocusable(true);
 	}
 	
@@ -43,6 +51,7 @@ public class SpritePanel extends JPanel {
 				g.fillRect(i * gridsize, j * gridsize, gridsize, gridsize);
 			}
 		}
+		currentWidget.redraw(g);
 	}
 	
 	int lastx = 0;
@@ -83,7 +92,7 @@ public class SpritePanel extends JPanel {
 			lasty = sy;
 		}
 		
-		Starter.spritePanel.repaint();
+		repaint();
 	}
 	
 	boolean isMouseDown = false;
@@ -99,20 +108,20 @@ public class SpritePanel extends JPanel {
 		@Override
 		public void mouseEntered(MouseEvent e) {
 			// TODO Auto-generated method stub
-			
+			isMouseIn = true;
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
 			// TODO Auto-generated method stub
 			isMouseDown = false;
+			isMouseIn = false;
+			repaint();
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
-			Starter.startTransaction();
-			draw(e.getX(), e.getY(), true);
+			currentWidget.mousePressed(e);
 		}
 
 		@Override
@@ -122,23 +131,36 @@ public class SpritePanel extends JPanel {
 		}
 	}
 	
+	public int mouseX = 0;
+	public int mouseY = 0;
+	boolean isMouseIn = false;
+	
 	class SpritePanelMouseMotionListener implements MouseMotionListener {
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			// TODO Auto-generated method stub
-			draw(e.getX(), e.getY(), false);
+			mouseX = e.getX();
+			mouseY = e.getY();
+			currentWidget.mouseDragged(e);
 		}
 
 		@Override
 		public void mouseMoved(MouseEvent e) {
 			// TODO Auto-generated method stub
-			
+			mouseX = e.getX();
+			mouseY = e.getY();
+			repaint();
 		}
 	}
 	
 	class SpritePanelKeyListener implements KeyListener {
 
+		SpritePanel parent;
+		
+		SpritePanelKeyListener(SpritePanel parent_) {
+			parent = parent_;
+		}
+		
 		@Override
 		public void keyPressed(KeyEvent e) {
 			// TODO Auto-generated method stub
@@ -154,8 +176,34 @@ public class SpritePanel extends JPanel {
 			}
 			if(e.getKeyChar() == 'c') {
 				System.out.println("COLOR");
-				Starter.selectedColor = (Starter.selectedColor + 1) % Starter.palette.size();
+				currentWidget = new ColorQuickMenu(parent);
+				//Starter.selectedColor = (Starter.selectedColor + 1) % Starter.palette.size();
 			}
+			if(e.getKeyChar() == 'x') {
+				currentWidget = new Brush(parent);
+			}
+			if(e.getKeyChar() == 's') {
+				File f = new File("temp.jre");
+				try {
+				f.createNewFile();
+				FileWriter fw = new FileWriter(f);
+				Starter.saveToFile(fw);
+				fw.close();
+				} catch (IOException err) {
+					System.err.println("Could not save file");
+				}
+			}
+			if(e.getKeyChar() == 'l') {
+				File f = new File("temp.jre");
+				try {
+				FileReader fr = new FileReader(f);
+				Starter.loadFromFile(fr);
+				fr.close();
+				} catch (IOException err) {
+					System.err.println("Could not load file");
+				}
+			}
+			parent.repaint();
 		}
 
 		@Override
